@@ -1,0 +1,29 @@
+FROM alfpark/linpack:2018-intel-mkl
+
+RUN yum update -y && \
+	yum -y group install "Development Tools" && \
+	yum install -y scl-utils openssh-clients openssh-server net-tools numactl unzip && \
+	yum install -y wget && yum -y install nfs-utils && \
+	yum install -y dos2unix
+
+ENV PATH "$PATH:/opt/intel2/compilers_and_libraries_2018/linux/mpi/intel64/bin/"
+ENV LD_LIBRARY_PATH "/opt/intel2/compilers_and_libraries_2018/linux/mpi/intel64/lib:${LD_LIBRARY_PATH}"
+
+RUN echo "export PATH=$PATH:/opt/intel2/compilers_and_libraries_2018/linux/mpi/intel64/bin/" >> ~/.bashrc \
+        && echo "export LD_LIBRARY_PATH=/opt/intel2/compilers_and_libraries_2018/linux/mpi/intel64/lib:${LD_LIBRARY_PATH}" >> ~/.bashrc
+
+WORKDIR /build
+
+COPY send_receive.cpp .
+COPY random_walk.cc .
+
+RUN mpicxx send_receive.cpp -o send_receive
+RUN mpicxx random_walk.cc -o random_walk
+
+WORKDIR /app
+
+RUN  cp /build/send_receive .
+RUN cp /build/random_walk .
+
+# mpirun -n 9 ./send_receive
+# mpirun -n 5 ./random_walk 100 500 20
