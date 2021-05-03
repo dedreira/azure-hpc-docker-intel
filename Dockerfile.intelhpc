@@ -1,0 +1,9 @@
+FROM centos:centos8
+
+WORKDIR /etc/yum.repos.d
+
+COPY oneAPI.repo .
+
+RUN yum install -y intel-basekit intel-hpckit
+
+

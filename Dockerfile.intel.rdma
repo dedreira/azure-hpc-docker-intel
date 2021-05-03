@@ -1,0 +1,4 @@
+FROM centos-hpc-intel 
+
+RUN yum install -y libibverbs-utils libibverbs-devel libibverbs-devel-static libmlx4 \
+    libmlx5 ibutils libibcm libibcommon libibmad libibumad 
